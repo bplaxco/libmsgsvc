@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from libmsgsvc import MsgService, on_recv
+from libmsgsvc import MsgService, svc_on_recv
 import sys
 import time
 
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     svc = MsgService(server, "somepassword", sys.argv[1], debug=True)
 
     # Start clearing the buffer
-    on_recv(svc, print_handler)
+    svc_on_recv(svc, print_handler)
     time.sleep(2)
     svc.join()
 
