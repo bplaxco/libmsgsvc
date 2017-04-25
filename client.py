@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # Connection info
     info = sys.argv[1]
     print "Connecting to " + info
-    svc = svc_connect(info, debug=True)
+    svc = svc_connect(info)
 
     # Start clearing the buffer
     svc_on_recv(svc, print_handler)
