@@ -13,25 +13,28 @@ import thread
 
 
 class MsgService(object):
-    def __init__(self, server, password, nick, port=6667):
+    def __init__(self, server, password, nick, port=6667, debug=False):
+        self.debug = debug
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.channel = '#' + hashlib.sha256(password).hexdigest()[:25]
         self.password = password
         self.msg_ids = []
         self.conn.connect((server, port))
-        time.sleep(1)  # Give time to connect
-        self.send("USER %s %s %s : " % (nick, nick, nick))
-        self.send("NICK %s" % nick)
+        self.nick = nick
+
+    def join(self):
+        self.send("USER %s %s %s : " % (self.nick, self.nick, self.nick))
+        self.send("NICK %s" % self.nick)
         self.send("JOIN %s" % self.channel)
 
     def send(self, msg):
-        print("<- " + msg)
+        if self.debug: print("<- " + msg)
         self.conn.send(msg + "\r\n")
 
     def recv(self):
-        #TODO: figure out how to handle large messages
-        text = self.conn.recv(2040)
-        print("-> " + text)
+        #TODO: figure out how to handle chunked messages
+        text = self.conn.recv(2 ** 14)
+        if self.debug: print("-> " + text)
         return text
 
     def send_message(self, data):
@@ -41,6 +44,9 @@ class MsgService(object):
 
     def recv_message(self):
         text = self.recv()
+
+        if not text:
+            return
 
         if text.find('PING') != -1:
             msg = 'PONG ' + text.split()[1]
@@ -68,7 +74,6 @@ def on_recv(svc, handler):
     def _start():
         while True:
             msg = svc.recv_message()
-
             if msg:
                 handler(svc, msg)
 

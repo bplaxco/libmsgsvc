@@ -1,23 +1,24 @@
+#! /usr/bin/env python
+
 from libmsgsvc import MsgService, on_recv
 import sys
 import time
 
 
-def greet_handler(svc, msg):
-    if msg == "hello":
-        svc.send_message("Well hello there!")
-    elif msg == "Well hello there!":
-        print(msg)
+def print_handler(svc, msg):
+    print(msg)
 
 
 if __name__ == "__main__":
     # Connection info
-    password = "somepassword"
     server = "irc.freenode.net"
     print "Connecting to " + server
-    svc = MsgService(server, password, sys.argv[1])
+    svc = MsgService(server, "somepassword", sys.argv[1], debug=True)
 
-    on_recv(svc, greet_handler)
+    # Start clearing the buffer
+    on_recv(svc, print_handler)
+    time.sleep(2)
+    svc.join()
 
     while True:
         value = raw_input().strip()

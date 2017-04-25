@@ -6,5 +6,11 @@ this only supports IRC (sorta).
 
 CLIENT
 
-The client doesn't do much right now, but the goal is to turn it into a "netcat"
-like interface for working with other connected systesms.
+The client is like a slow "netcat" connection. It just sends what ever you
+type across the wire and prints out what it sees.
+
+
+TODO
+
+* put debug output in a debug log
+* better handle issues with bad connections and network lag
