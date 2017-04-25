@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from libmsgsvc import connect, svc_on_recv
+from libmsgsvc import svc_connect, svc_on_recv
 import sys
 import time
 
@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # Connection info
     info = sys.argv[1]
     print "Connecting to " + info
-    svc = connect(info, debug=True)
+    svc = svc_connect(info, debug=True)
 
     # Start clearing the buffer
     svc_on_recv(svc, print_handler)

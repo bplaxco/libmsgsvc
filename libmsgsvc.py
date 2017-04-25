@@ -12,7 +12,7 @@ import uuid
 import thread
 
 
-def connect(connect_str, debug=False):
+def svc_connect(connect_str, debug=False):
     """
     connect with irc://user:pass@server:port
     """
