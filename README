@@ -1,0 +1,10 @@
+                                   libmsgsvc
+
+A library for sending messages between systems using chat servers. Currently
+this only supports IRC (sorta).
+
+
+CLIENT
+
+The client doesn't do much right now, but the goal is to turn it into a "netcat"
+like interface for working with other connected systesms.
