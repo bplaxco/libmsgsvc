@@ -12,6 +12,29 @@ import uuid
 import thread
 
 
+def connect(connect_str, debug=False):
+    """
+    connect with irc://user:pass@server:port
+    """
+    proto, rest = connect_str.split("://")
+    port = 6667
+
+    if not proto == "irc":
+        raise Exception("The only protocol supported right now is IRC")
+
+    creds, server_info = rest.split("@")
+    username, password = creds.split(":")
+    server_info_parts = server_info.split(":")
+
+    if len(server_info_parts) == 2:
+        server, port = server_info_parts
+        port = int(port)
+    else:
+        server = server_info_parts[0]
+
+    return MsgService(server, password, username, port, debug=debug)
+
+
 def svc_create_msg(data, nick):
     return {"id": str(uuid.uuid4()), "data": data, "client": nick, "time": time.time()}
 
@@ -99,7 +122,7 @@ class MsgService(object):
         recv_message - return a raw msg object (see svc_create_message as an example)
         send_message - take msg data, create msg and send it
     """
-    def __init__(self, server, password, nick, port=6667, debug=False):
+    def __init__(self, server, password, nick, port, debug=False):
         self.channel = irc_create_channel(password)
         self.conn = irc_create_conn(server, port)
         self.debug = debug
