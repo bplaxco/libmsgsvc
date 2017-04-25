@@ -12,8 +12,8 @@ import uuid
 import thread
 
 
-def svc_create_msg(data):
-    return {"id": str(uuid.uuid4()), "data": data}
+def svc_create_msg(data, nick):
+    return {"id": str(uuid.uuid4()), "data": data, "client": nick, "time": time.time()}
 
 
 def svc_encode(password, msg):
@@ -64,8 +64,8 @@ def irc_join(conn, channel, nick, debug=False):
     irc_send(conn, "JOIN %s" % channel, debug=debug)
 
 
-def irc_send_message(conn, to, password, data, debug=False):
-    msg = "PRIVMSG %s MSGSVC%s" % (to, svc_encode(password, svc_create_msg(data)))
+def irc_send_message(conn, to, password, data, nick, debug=False):
+    msg = "PRIVMSG %s MSGSVC%s" % (to, svc_encode(password, svc_create_msg(data, nick)))
     irc_send(conn, msg, debug)
 
 
@@ -77,7 +77,7 @@ def irc_recv_message(conn, password, msg_ids, debug=False):
 
     if text.find('PING') != -1:
         msg = 'PONG ' + text.split()[1]
-        irc_send(msg)
+        irc_send(conn, msg)
     elif "MSGSVC" in text:
         try:
             msg = svc_decode(password, text.split("MSGSVC")[1])
@@ -104,7 +104,7 @@ class MsgService(object):
         self.conn = irc_create_conn(server, port)
         self.debug = debug
         self.msg_ids = []
-        self.nick = nick
+        self.nick = nick+"_"+hashlib.sha256(str(time.time())).hexdigest()[:5]
         self.password = password
 
     def join(self):
@@ -114,4 +114,4 @@ class MsgService(object):
         return irc_recv_message(self.conn, self.password, self.msg_ids, self.debug)
 
     def send_message(self, data, to=None):
-        irc_send_message(self.conn, to or self.channel, self.password, data, self.debug)
+        irc_send_message(self.conn, to or self.channel, self.password, data, self.nick, self.debug)
