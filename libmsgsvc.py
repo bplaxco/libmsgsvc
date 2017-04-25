@@ -144,7 +144,11 @@ class MsgService(object):
 
     def recv_message(self):
         msg = irc_recv_message(self.conn, self.password, self.nick, self.channel, self.msg_ids, debug=self.debug)
-        signal = msg and msg["data"].get("__msgsvc.signal") or ""
+        data = msg and msg["data"]
+        signal = ""
+
+        if data and isinstance(data, dict):
+            signal = data.get("__msgsvc.signal") or ""
 
         if signal:
             _print_signal(signal)
