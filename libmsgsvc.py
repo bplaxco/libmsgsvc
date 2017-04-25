@@ -37,10 +37,11 @@ class MsgService(object):
         if self.debug: print("-> " + text)
         return text
 
-    def send_message(self, data):
+    def send_message(self, data, to=None):
+        to = to or self.channel
         msg = json.dumps({"id": str(uuid.uuid4()), "data": data})
         msg = base64.b64encode(encrypt(self.password, msg))
-        self.send("PRIVMSG %s MSGSVC%s" % (self.channel, msg))
+        self.send("PRIVMSG %s MSGSVC%s" % (to, msg))
 
     def recv_message(self):
         text = self.recv()
@@ -51,23 +52,19 @@ class MsgService(object):
         if text.find('PING') != -1:
             msg = 'PONG ' + text.split()[1]
             self.send(msg)
+
         elif "MSGSVC" in text:
-            parts = text.split("PRIVMSG %s :" % self.channel)
-            if len(parts) > 1:
-                msg = parts[1].split("MSGSVC")[1]
-                msg = decrypt(self.password, base64.b64decode(msg)).strip()
+            try:
+                msg = decrypt(self.password, base64.b64decode(text.split("MSGSVC")[1])).strip()
+                msg = json.loads(msg)
+                msg_id = msg["id"]
 
-                try:
-                    msg = json.loads(msg)
-                    msg_id = msg["id"]
-                    msg_data = msg["data"]
-
-                    # TODO: store these somewhere else
-                    if msg_id not in self.msg_ids:
-                        self.msg_ids.append(msg_id)
-                        return msg_data
-                except:
-                    pass
+                # TODO: store these somewhere else
+                if msg_id not in self.msg_ids:
+                    self.msg_ids.append(msg_id)
+                    return msg
+            except:
+                pass
 
 
 def on_recv(svc, handler):

@@ -6,7 +6,7 @@ import time
 
 
 def print_handler(svc, msg):
-    print(msg)
+    print(msg["data"])
 
 
 if __name__ == "__main__":
