@@ -1,6 +1,13 @@
+from libmsgsvc import MsgService, on_recv
 import sys
 import time
-from libmsgsvc import MsgService
+
+
+def greet_handler(svc, msg):
+    if msg == "hello":
+        svc.send_message("Well hello there!")
+    elif msg == "Well hello there!":
+        print(msg)
 
 
 if __name__ == "__main__":
@@ -10,12 +17,13 @@ if __name__ == "__main__":
     print "Connecting to " + server
     svc = MsgService(server, password, sys.argv[1])
 
-    while 1:
-        msg = svc.recv_message()
-        print(msg)
+    on_recv(svc, greet_handler)
 
-        if msg == "die":
+    while True:
+        value = raw_input().strip()
+
+        if value == "exit":
             sys.exit()
         else:
-            time.sleep(1)
-            svc.send_message("die")
+            svc.send_message(value)
+

@@ -9,6 +9,7 @@ import socket
 import sys
 import time
 import uuid
+import thread
 
 
 class MsgService(object):
@@ -61,3 +62,14 @@ class MsgService(object):
                         return msg_data
                 except:
                     pass
+
+
+def on_recv(svc, handler):
+    def _start():
+        while True:
+            msg = svc.recv_message()
+
+            if msg:
+                handler(svc, msg)
+
+    return thread.start_new_thread(_start, tuple())
