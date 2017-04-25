@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from libmsgsvc import MsgService, svc_on_recv
+from libmsgsvc import svc_connect, svc_on_recv
 import sys
 import time
 
@@ -11,9 +11,9 @@ def print_handler(svc, msg):
 
 if __name__ == "__main__":
     # Connection info
-    server = "irc.freenode.net"
-    print "Connecting to " + server
-    svc = MsgService(server, "somepassword", sys.argv[1], debug=True)
+    info = sys.argv[1]
+    print "Connecting to " + info
+    svc = svc_connect(info, debug=True)
 
     # Start clearing the buffer
     svc_on_recv(svc, print_handler)
@@ -27,4 +27,3 @@ if __name__ == "__main__":
             sys.exit()
         else:
             svc.send_message(value)
-
