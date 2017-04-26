@@ -18,7 +18,7 @@ def receive(bus, msg):
         pyfile = imp.load_source(filename, filename)
         pyfile.invoke(msg, bus)
     except Exception as e:
-        print e
+#        print e
 #        print("Received a non-pirclug message.")
         pass
 
