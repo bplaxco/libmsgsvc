@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from simpleabstractclient import SimpleAbstractClient as SimpleAbstractClient
+from simpleabstractclient import SimpleAbstractClient
 
 def receive(bus, msg):
     print(msg)
