@@ -72,7 +72,7 @@ class MessageBus(object):
         return self._recv_queue.get()
 
     def recv_data(self):
-        return self.recv().data
+        return self.recv().get_data()
 
     def is_ready(self):
         return self._connector.is_ready()
