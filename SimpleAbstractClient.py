@@ -14,9 +14,9 @@ class SimpleAbstractClient(object):
     def __init__(self, client_id, password, receiver, main=default_main, server="irc.freenode.net:6667", debug=False):
         self.bus = MessageBus("irc://%s:%s@%s" % (client_id, password, server), debug=debug)
         self.main = main
-        thread.start_new_thread(self._start_handler, (receiver,))
+        thread.start_new_thread(self._start_receiver, (receiver,))
 
-    def _start_handler(self, receiver):
+    def _start_receiver(self, receiver):
         while not self.bus.is_ready():
             pass
 
