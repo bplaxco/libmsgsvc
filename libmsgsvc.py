@@ -135,7 +135,7 @@ class MsgService(object):
         self.conn = irc_create_conn(server, port)
         self.debug = debug
         self.msg_ids = []
-        self.nick = nick+"_"+hashlib.sha256(str(time.time())).hexdigest()[:5]
+        self.nick = (nick+"_"+hashlib.sha256(str(time.time())).hexdigest()[:5])[:16]
         self.password = password
         self.is_ready = False
 
