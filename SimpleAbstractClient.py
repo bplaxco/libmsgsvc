@@ -16,16 +16,13 @@ class SimpleAbstractClient(object):
         self.main = main
         thread.start_new_thread(self._start_handler, (receiver,))
 
-    def begin(self):
-        while True:
-            self.main(self)
-
-    def send(self, data):
-        self.bus.send_data(data)
-
     def _start_handler(self, receiver):
         while not self.bus.is_ready():
             pass
 
         while True:
             receiver(self.bus, self.bus.recv())
+
+    def begin(self):
+        while True:
+            self.main(self.bus)
