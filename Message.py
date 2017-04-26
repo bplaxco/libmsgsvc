@@ -25,12 +25,12 @@ class Message(object):
     def from_dict(cls, msg_dict):
         return cls(**msg_dict)
 
+    def to_encrypted_str(self, password):
+        return base64.b64encode(encrypt(password, json.dumps(self.to_dict())))
+
     @classmethod
     def from_encrypted_str(cls, password, encrypted_str):
         return cls.from_dict(json.loads(decrypt(password, base64.b64decode(encrypted_str))))
-
-    def to_encrypted_str(self, password):
-        return base64.b64encode(encrypt(password, json.dumps(self.to_dict())))
 
     def get_data(self):
         return self._data
