@@ -22,7 +22,7 @@ class MessageBus(object):
 
         print("Channel: " + channel)
 
-        self._client_id = "%s_%s" % (client_id, hashlib.sha256(str(time.time())).hexdigest()[:5])  # @UndefinedVariable
+        self._client_id = ("%s-%s" % (client_id, hashlib.sha256(str(time.time())).hexdigest()[:5]))[:16]  # @UndefinedVariable
         self._send_queue = Queue()
         self._recv_queue = Queue()
         self._connector = Connector(self._client_id, channel, server, port, debug=debug)
