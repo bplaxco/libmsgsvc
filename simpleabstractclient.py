@@ -24,8 +24,16 @@ class SimpleAbstractClient(object):
         self.main = main
 
     def begin(self):
+        print "Wait, connecting...."
+        while not self.is_ready:
+            time.sleep(1)
+        print "Connected."
         while True:
             self.main(self)
 
     def send(self, msg):
         self.svc.send_message(msg)
+
+    @property
+    def is_ready(self):
+        return self.svc.is_ready

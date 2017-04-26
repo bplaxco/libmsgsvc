@@ -8,4 +8,4 @@ def receive(bus, msg):
 def main(bus):
     bus.send(raw_input().strip())
 
-SimpleAbstractClient("simple-client", "password", receive, main).begin()
+SimpleAbstractClient("simple-client", "password", receive, main, debug=False).begin()
