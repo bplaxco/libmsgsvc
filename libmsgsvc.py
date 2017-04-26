@@ -7,9 +7,13 @@ import os
 import random
 import socket
 import sys
+import thread
 import time
 import uuid
-import thread
+
+
+def _print_signal(signal):
+    print("Signal Emmited: (  ( (%s) )  )" % signal.title())
 
 
 def svc_connect(connect_str, debug=False):
@@ -35,7 +39,7 @@ def svc_connect(connect_str, debug=False):
     return MsgService(server, password, username, port, debug=debug)
 
 
-def svc_create_msg(data, nick):
+def svc_create_message(data, nick):
     return {"id": str(uuid.uuid4()), "data": data, "client": nick, "time": time.time()}
 
 
@@ -88,20 +92,19 @@ def irc_join(conn, channel, nick, debug=False):
 
 
 def irc_send_message(conn, to, password, data, nick, debug=False):
-    msg = "PRIVMSG %s MSGSVC%s" % (to, svc_encode(password, svc_create_msg(data, nick)))
-    irc_send(conn, msg, debug)
+    msg = "PRIVMSG %s MSGSVC%s" % (to, svc_encode(password, svc_create_message(data, nick)))
+    irc_send(conn, msg, debug=debug)
 
 
-def irc_recv_message(conn, password, msg_ids, debug=False):
-    text = irc_recv(conn, debug)
+def irc_is_ready(nick, channel, text):
+    """The server says that you've joined when you're good to go"""
+    return nick in text and "JOIN" in text and channel in text
 
-    if not text:
-        return
 
-    if text.find('PING') != -1:
-        msg = 'PONG ' + text.split()[1]
-        irc_send(conn, msg)
-    elif "MSGSVC" in text:
+def irc_recv_message(conn, password, nick, channel, msg_ids, debug=False):
+    text = irc_recv(conn, debug=debug) or ""
+
+    if "MSGSVC" in text:
         try:
             msg = svc_decode(password, text.split("MSGSVC")[1])
             msg_id = msg["id"]
@@ -111,6 +114,11 @@ def irc_recv_message(conn, password, msg_ids, debug=False):
                 return msg
         except:
             pass
+    elif text.find('PING') != -1:
+        msg = 'PONG ' + text.split()[1]
+        irc_send(conn, msg)
+    elif irc_is_ready(nick, channel, text):
+        return svc_create_message({"__msgsvc.signal": "ready"}, nick)
 
 
 class MsgService(object):
@@ -129,12 +137,26 @@ class MsgService(object):
         self.msg_ids = []
         self.nick = nick+"_"+hashlib.sha256(str(time.time())).hexdigest()[:5]
         self.password = password
+        self.is_ready = False
 
     def join(self):
-        irc_join(self.conn, self.channel, self.nick, self.debug)
+        irc_join(self.conn, self.channel, self.nick, debug=self.debug)
 
     def recv_message(self):
-        return irc_recv_message(self.conn, self.password, self.msg_ids, self.debug)
+        msg = irc_recv_message(self.conn, self.password, self.nick, self.channel, self.msg_ids, debug=self.debug)
+        data = msg and msg["data"]
+        signal = ""
+
+        if data and isinstance(data, dict):
+            signal = data.get("__msgsvc.signal") or ""
+
+        if signal:
+            _print_signal(signal)
+
+        if signal == "ready":
+            self.is_ready = True
+        else:
+            return msg
 
     def send_message(self, data, to=None):
-        irc_send_message(self.conn, to or self.channel, self.password, data, self.nick, self.debug)
+        irc_send_message(self.conn, to or self.channel, self.password, data, self.nick, debug=self.debug)
