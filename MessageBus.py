@@ -47,12 +47,11 @@ class MessageBus(object):
 
     def _queue_recv(self):
         while True:
-            for text in self._connector.recv():
-                if "MSGSVC" in text:
-                    encrypted_string = text.split("MSGSVC")[1]
-                    message = Message.from_encrypted_str(self._password, encrypted_string)
-                    self._recv_queue.put(message)
-
+            text = self._connector.recv()
+            if "MSGSVC" in text:
+                encrypted_string = text.split("MSGSVC")[1]
+                message = Message.from_encrypted_str(self._password, encrypted_string)
+                self._recv_queue.put(message)
 
     def _dequeue_send(self):
         while not self.is_ready():
@@ -61,7 +60,7 @@ class MessageBus(object):
         print("READY")
 
         while True:
-            self._connector.send(self._send_queue.get().to_encrypted_str(self._password))
+            self._connector.send("MSGSVC" + self._send_queue.get().to_encrypted_str(self._password))
 
     def send(self, message):
         self._send_queue.put(message)

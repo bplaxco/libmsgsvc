@@ -2,10 +2,13 @@
 
 from SimpleAbstractClient import SimpleAbstractClient
 
+
 def receive(bus, msg):
-    print(msg)
+    print(msg.get_data())
+
 
 def main(bus):
-    bus.send(raw_input().strip())
+    bus.send(raw_input("> ").strip())
 
-SimpleAbstractClient("sclient", "password", receive, main).begin()
+
+SimpleAbstractClient("sclient", "password", receive, main, debug=False).begin()

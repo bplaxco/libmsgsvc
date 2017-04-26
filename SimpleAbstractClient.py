@@ -11,7 +11,6 @@ def default_main(bus):
 
 
 class SimpleAbstractClient(object):
-
     def __init__(self, client_id, password, receiver, main=default_main, server="irc.freenode.net:6667", debug=False):
         self.bus = MessageBus("irc://%s:%s@%s" % (client_id, password, server), debug=debug)
         self.main = main
