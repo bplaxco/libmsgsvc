@@ -9,21 +9,19 @@ def print_handler(svc, msg):
     print(msg["data"])
 
 class SimpleAbstractClient(object):
-
-    svc=None
-    main=None
+    svc = None
+    main = None
 
     def dummymain(self):
         time.sleep(60*60*24*365*100)
 
-    def  __init__(self, user, channel, recv_handler, main=dummymain, debug=False):
-        info="irc://"+user+":"+channel+"@irc.freenode.net:6667"
+    def  __init__(self, user, channel, recv_handler, main=dummymain, debug=False, server="irc.freenode.net:6667"):
+        info="irc://%s:%s@%s" % (user, channel, server)
         self.svc = svc_connect(info, debug)
         svc_on_recv(self.svc, recv_handler)
         time.sleep(2)
         self.svc.join()
-        self.main=main
-
+        self.main = main
 
     def begin(self):
         while True:
