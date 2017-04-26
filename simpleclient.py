@@ -5,5 +5,7 @@ from simpleabstractclient import SimpleAbstractClient
 def receive(bus, msg):
     print(msg)
 
-bus=SimpleAbstractClient("simple-client", "password", receive)
-bus.begin()
+def main(bus):
+    bus.send(raw_input().strip())
+
+SimpleAbstractClient("simple-client", "password", receive, main).begin()
