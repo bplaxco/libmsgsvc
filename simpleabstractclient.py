@@ -31,7 +31,7 @@ class SimpleAbstractClient(object):
         while True:
             self.main(self)
 
-    def send(self, msg):
+    def send_message(self, msg):
         self.svc.send_message(msg)
 
     @property

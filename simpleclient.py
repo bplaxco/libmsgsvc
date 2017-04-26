@@ -3,9 +3,9 @@
 from simpleabstractclient import SimpleAbstractClient
 
 def receive(bus, msg):
-    print(msg)
+    print(msg["data"])
 
 def main(bus):
-    bus.send(raw_input().strip())
+    bus.send_message(raw_input("Text: ").strip())
 
 SimpleAbstractClient("simple-client", "password", receive, main, debug=False).begin()
