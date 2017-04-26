@@ -26,8 +26,8 @@ class Message(object):
         return cls(**msg_dict)
 
     @classmethod
-    def from_encrypted_str(cls, password, text):
-        return cls.from_dict(json.loads(decrypt(password, base64.b64decode(text))))
+    def from_encrypted_str(cls, password, encrypted_str):
+        return cls.from_dict(json.loads(decrypt(password, base64.b64decode(encrypted_str))))
 
     def to_encrypted_str(self, password):
         return base64.b64encode(encrypt(password, json.dumps(self.to_dict())))

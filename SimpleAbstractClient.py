@@ -24,5 +24,8 @@ class SimpleAbstractClient(object):
         self.bus.send_data(data)
 
     def _start_handler(self, receiver):
+        while not self.bus.is_ready():
+            pass
+
         while True:
             receiver(self.bus, self.bus.recv())

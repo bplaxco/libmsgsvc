@@ -55,7 +55,7 @@ class IRCConnector(AbstractConnector):
 
     def _dequeue_send(self):
         while not self._is_ready:
-            time.sleep(1)
+            time.sleep(0.5)
 
         while True:
             self._raw_send(self._send_queue.get())
