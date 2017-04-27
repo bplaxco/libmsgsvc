@@ -2,11 +2,11 @@
 import json
 import sys
 
-from libmsgsvc.SimpleAbstractClient import SimpleAbstractClient
+from libmsgsvc.SimpleClient import SimpleClient
 
 
-def receive(bus, msg):
-    print(msg.get_data())
+def receive(bus):
+    print(bus.recv().get_data())
 
 
 def main(bus):
@@ -21,4 +21,7 @@ def main(bus):
         bus.send_data(value)
 
 
-SimpleAbstractClient("sclient", "password", receive, main, debug=False).begin()
+if __name__ == "__main__":
+    client = SimpleClient("irc://sclient:password@irc.freenode.net:6667")
+    client.non_blocking_loop(receive)
+    client.loop(main)

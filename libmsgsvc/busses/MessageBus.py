@@ -11,12 +11,12 @@ class MessageBus(AbstractBus):
     _password = "public"
     _connector = None
 
-    def __init__(self, connect_string, debug=False):
+    def __init__(self, connect_str, debug=False):
         """
-        connect_string format: irc://client_type:password@server:port
+        connect_str format: irc://client_type:password@server:port
         """
         super(MessageBus, self).__init__()
-        proto, client_id, password, server, port = self._parse_connect_string(connect_string)
+        proto, client_id, password, server, port = self._parse_connect_str(connect_str)
         Connector = self._connector_class_by_proto(proto)
         channel = '#' + hashlib.sha256(password).hexdigest()[:25]  # @UndefinedVariable
         self._client_id = ("%s-%s" % (client_id, hashlib.sha256(str(time.time())).hexdigest()[:5]))[:16]  # @UndefinedVariable
@@ -27,8 +27,8 @@ class MessageBus(AbstractBus):
 
         print("Channel: " + channel)
 
-    def _parse_connect_string(self, connect_string):
-        proto, user_server_info = connect_string.split("://")
+    def _parse_connect_str(self, connect_str):
+        proto, user_server_info = connect_str.split("://")
         user_info, server_info = user_server_info.split("@")
         client_id, password = user_info.split(":")
         server, port = server_info.split(":")
