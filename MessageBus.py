@@ -27,6 +27,7 @@ class MessageBus(object):
         self._recv_queue = Queue()
         self._connector = Connector(self._client_id, channel, server, port, debug=debug)
         self._password = password
+        self._received_msg_ids = []
 
         # Start send and receive threads and join
         thread.start_new_thread(self._queue_recv, tuple())
@@ -51,6 +52,11 @@ class MessageBus(object):
             if "MSGSVC" in text:
                 encrypted_str = text.split("MSGSVC")[1]
                 message = Message.from_encrypted_str(self._password, encrypted_str)
+
+                if message.get_id() in self._received_msg_ids:
+                    continue
+
+                self._received_msg_ids.append(message.get_id())
                 self._recv_queue.put(message)
 
     def _dequeue_send(self):
