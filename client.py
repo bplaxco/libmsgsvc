@@ -8,7 +8,7 @@ def receive(bus, msg):
 
 
 def main(bus):
-    bus.send_data(raw_input().strip())
+    bus.send_data(raw_input(">").strip())
 
 
-AbstractClient("client", "password", receive, main, debug=False).begin()
+bus = AbstractClient("client", "password", receive, main, debug=False).listen().push()
