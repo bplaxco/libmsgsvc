@@ -1,8 +1,5 @@
-from Queue import Queue
-
 import re
 import socket
-import thread
 import time
 
 from AbstractConnector import AbstractConnector
@@ -14,18 +11,14 @@ class IRCConnector(AbstractConnector):
     _conn = None
 
     def __init__(self, client_id, channel, server, port, debug=False):
-        self._send_queue = Queue()
-        self._recv_queue = Queue()
+        super(IRCConnector, self).__init__(client_id, channel, server, port, debug)
         self._client_id = client_id
         self._channel = channel
         self._server = server
-        self._port = int(port)
+        self._port = port
         self._debug = debug
         self._connect()
-
-        # Start send and receive threads
-        thread.start_new_thread(self._queue_recv, tuple())
-        thread.start_new_thread(self._dequeue_send, tuple())
+        self._start_queue_threads()
 
     def _connect(self):
         try:
@@ -65,9 +58,9 @@ class IRCConnector(AbstractConnector):
 
                 for text in lines.splitlines():
                     if text.find('PING') != -1:
-                        self._send_queue.put('PONG ' + text.split()[1])
+                        self._raw_send('PONG ' + text.split()[1])
                     elif "PRIVMSG" in text:
-                        self._recv_queue.put(text)
+                        self._recv_queue.put(self._privmsg_re.sub("", text))
                     elif not self._is_ready:
                         self._is_ready = self._client_id in text and "JOIN" in text and self._channel in text
             except Exception as e:
@@ -88,7 +81,7 @@ class IRCConnector(AbstractConnector):
             text = self._send_queue.get()
 
             try:
-                self._raw_send(text)
+                self._raw_send("PRIVMSG %s %s" % (self._channel, text))
             except Exception as e:
                 print(e)
                 time.sleep(1)
@@ -100,12 +93,6 @@ class IRCConnector(AbstractConnector):
                     self._connect()
                 except:
                     print("Could not reconnect, will try again.")
-
-    def send(self, text):
-        self._send_queue.put("PRIVMSG %s %s" % (self._channel, text))
-
-    def recv(self):
-        return self._privmsg_re.sub("", self._recv_queue.get())
 
     def is_ready(self):
         return self._is_ready

@@ -3,7 +3,7 @@
 import thread
 import time
 
-from MessageBus import MessageBus
+from busses.MessageBus import MessageBus
 
 
 def default_main(bus):
