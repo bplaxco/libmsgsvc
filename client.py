@@ -1,29 +1,14 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
-from libmsgsvc import svc_connect, svc_on_recv
-import sys
-import time
+from SimpleAbstractClient import SimpleAbstractClient
 
 
-def print_handler(svc, msg):
-    print(msg["data"])
+def receive(bus, msg):
+    print(msg.get_data())
 
 
-if __name__ == "__main__":
-    # Connection info
-    info = sys.argv[1]
-    print "Connecting to " + info
-    svc = svc_connect(info)
+def main(bus):
+    bus.send_data(raw_input().strip())
 
-    # Start clearing the buffer
-    svc_on_recv(svc, print_handler)
-    time.sleep(2)
-    svc.join()
 
-    while True:
-        value = raw_input().strip()
-
-        if value == "exit":
-            sys.exit()
-        else:
-            svc.send_message(value)
+SimpleAbstractClient("sclient", "password", receive, main, debug=False).begin()
