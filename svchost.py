@@ -4,7 +4,7 @@ import json
 import os
 import sys
 
-from simpleabstractclient import SimpleAbstractClient
+from AbstractClient import AbstractClient
 
 def receive(bus, msg):
     svc=None
@@ -16,10 +16,13 @@ def receive(bus, msg):
         filename=svc+".py"
         filename=os.path.join(os.getcwd(), sys.argv[1], filename)
         pyfile = imp.load_source(filename, filename)
-        pyfile.invoke(msg, bus)
+        pyfile.receive(msg, bus)
     except Exception as e:
 #        print e
 #        print("Received a non-pirclug message.")
         pass
 
-SimpleAbstractClient("pirclug", "password", receive, debug=False).begin()
+#
+def main():
+    pass
+AbstractClient("svchost", "password", receive, debug=False).begin()
