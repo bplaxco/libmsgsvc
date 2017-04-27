@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from SimpleAbstractClient import SimpleAbstractClient
+from AbstractClient import AbstractClient
 
 
 def receive(bus, msg):
@@ -11,4 +11,4 @@ def main(bus):
     bus.send_data(raw_input().strip())
 
 
-SimpleAbstractClient("sclient", "password", receive, main, debug=False).begin()
+AbstractClient("client", "password", receive, main, debug=False).begin()
