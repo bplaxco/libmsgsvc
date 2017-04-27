@@ -3,6 +3,7 @@ import hashlib
 from Crypto import Random
 from Crypto.Cipher import AES
 
+
 class AESCipher(object):
 
     def __init__(self, key):
