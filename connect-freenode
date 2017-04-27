@@ -1,3 +1,0 @@
-#! /bin/bash
-
-./client.py irc://lupbot:password@irc.freenode.net:6667
