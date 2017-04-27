@@ -4,7 +4,7 @@ class AbstractConnector(object):
     """
 
     def __init__(self, client_id, channel, server, port, debug=False):
-        pass
+        raise NotImplementedError
 
     def send(self, text):
         raise NotImplementedError
