@@ -3,7 +3,7 @@ import json
 import time
 import uuid
 
-from simplecrypt import encrypt, decrypt
+from ciphers import AESCipher
 
 
 class Message(object):
@@ -26,11 +26,11 @@ class Message(object):
         return cls(**msg_dict)
 
     def to_encrypted_str(self, password):
-        return base64.b64encode(encrypt(password, json.dumps(self.to_dict())))
+        return base64.b64encode(AESCipher(password).encrypt(json.dumps(self.to_dict())))
 
     @classmethod
     def from_encrypted_str(cls, password, encrypted_str):
-        return cls.from_dict(json.loads(decrypt(password, base64.b64decode(encrypted_str))))
+        return cls.from_dict(json.loads(AESCipher(password).decrypt(base64.b64decode(encrypted_str))))
 
     def get_data(self):
         return self._data
