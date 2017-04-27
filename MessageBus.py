@@ -61,7 +61,7 @@ class MessageBus(object):
 
     def _dequeue_send(self):
         while not self.is_ready():
-            pass
+            time.sleep(1)
 
         print("READY")
 

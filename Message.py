@@ -2,7 +2,7 @@ import json
 import time
 import uuid
 
-from ciphers import AESCipher
+from ciphers.AESCipher import AESCipher
 
 
 class Message(object):

@@ -18,7 +18,7 @@ class SimpleAbstractClient(object):
 
     def _start_receiver(self, receiver):
         while not self.bus.is_ready():
-            pass
+            time.sleep(1)
 
         while True:
             receiver(self.bus, self.bus.recv())
