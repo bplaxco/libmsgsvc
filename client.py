@@ -2,7 +2,7 @@
 import json
 import sys
 
-from SimpleAbstractClient import SimpleAbstractClient
+from libmsgsvc.SimpleAbstractClient import SimpleAbstractClient
 
 
 def receive(bus, msg):
@@ -21,4 +21,4 @@ def main(bus):
         bus.send_data(value)
 
 
-SimpleAbstractClient("sclient", "password", receive, main, server="localhost:6667", debug=False).begin()
+SimpleAbstractClient("sclient", "password", receive, main, debug=False).begin()

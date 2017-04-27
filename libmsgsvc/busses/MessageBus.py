@@ -3,7 +3,7 @@ import time
 
 from AbstractBus import AbstractBus
 from IRCConnector import IRCConnector
-from Message import Message
+from libmsgsvc.Message import Message
 
 
 class MessageBus(AbstractBus):
