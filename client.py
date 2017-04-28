@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import ClientConnector
+from libmsgsvc import ClientConnector
 import json
 
 def receive(bus, msg):
@@ -10,7 +10,6 @@ def main(bus):
     data=raw_input(">").strip()
     try:
         data=json.loads(data)
-        print "Got it."
     except:
         pass
     bus.send_data(data)
