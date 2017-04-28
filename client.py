@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from AbstractClient import AbstractClient
+import ClientConnector
 
 def receive(bus, msg):
     print(msg.get_data())
@@ -8,4 +8,4 @@ def receive(bus, msg):
 def main(bus):
     bus.send_data(raw_input(">").strip())
 
-bus = AbstractClient("client", "password").listen(receive).publish(main, foreground=True)
+bus = ClientConnector.connect("client", "password").listen(receive).publish(main, foreground=True)
