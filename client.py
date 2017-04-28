@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 
-from AbstractClient import AbstractClient
+from libmsgsvc import ClientConnector
+import json
 
 def receive(bus, msg):
-    print("Got "+msg.get_data())
+    print(msg.get_data())
 
 def main(bus):
-    bus.send_data(raw_input(">").strip())
+    data=raw_input(">").strip()
+    try:
+        bus.send_data(json.loads(data))
+    except:
+        bus.send_data(data)
 
-bus = AbstractClient("client", "password").listen(receive).publish(main, foreground=True)
+bus = ClientConnector.connect("dbc-clnt", "password").listen(receive).publish(main, foreground=True)

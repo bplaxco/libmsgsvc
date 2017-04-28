@@ -7,15 +7,15 @@ import time
 
 from busses.MessageBus import MessageBus
 
-class AbstractClient(object):
+class ClientConnector(object):
 
-    listener_queues=None
+    listener_queues = None
 
-    def __init__(self, client_id, password, server="irc.freenode.net:6667", debug=False):
-        self.bus = MessageBus("irc://%s:%s@%s" % (client_id, password, server), debug=debug)
+    def __init__(self, connection_str, debug=False):
+        self.bus = MessageBus(connection_str, debug=debug)
         self._wait_for_bus()
-        self.listener_queues=[]
-        thread.start_new_thread(self._start_proxy_listener,())
+        self.listener_queues = []
+        thread.start_new_thread(self._start_proxy_listener, ())
 
     def _start_proxy_listener(self):
         while True:
@@ -51,3 +51,6 @@ class AbstractClient(object):
 
     def hang(self):
         signal.pause()
+
+def connect(client_id, channel, debug=False):
+    return ClientConnector("irc://%s:%s@irc.freenode.net:6667" % (client_id, channel), debug)

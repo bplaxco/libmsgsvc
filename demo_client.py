@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from AbstractClient import AbstractClient
+import ClientConnector
 from time import sleep
 
 count=0
@@ -21,7 +21,7 @@ def tick(bus):
     bus.send_data(str(count)+" seconds have passed.")
 
 
-bus = AbstractClient("client", "password")
+bus = ClientConnector.login("client", "password")
 bus.listen(receive)
 bus.listen(receive_caps)
 bus.publish(tick)

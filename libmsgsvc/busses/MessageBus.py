@@ -3,20 +3,21 @@ import time
 
 from AbstractBus import AbstractBus
 from IRCConnector import IRCConnector
-from Message import Message
+from libmsgsvc.Message import Message
 
 
 class MessageBus(AbstractBus):
     _connector_by_proto = {"irc": IRCConnector}
     _password = "public"
     _connector = None
+    _message_tag = "MSGSVC-%s-" % Message.version
 
-    def __init__(self, connect_string, debug=False):
+    def __init__(self, connect_str, debug=False):
         """
-        connect_string format: irc://client_type:password@server:port
+        connect_str format: irc://client_type:password@server:port
         """
         super(MessageBus, self).__init__()
-        proto, client_id, password, server, port = self._parse_connect_string(connect_string)
+        proto, client_id, password, server, port = self._parse_connect_str(connect_str)
         Connector = self._connector_class_by_proto(proto)
         channel = '#' + hashlib.sha256(password).hexdigest()[:25]  # @UndefinedVariable
         self._client_id = ("%s-%s" % (client_id, hashlib.sha256(str(time.time())).hexdigest()[:5]))[:16]  # @UndefinedVariable
@@ -27,8 +28,8 @@ class MessageBus(AbstractBus):
 
         print("Channel: " + channel)
 
-    def _parse_connect_string(self, connect_string):
-        proto, user_server_info = connect_string.split("://")
+    def _parse_connect_str(self, connect_str):
+        proto, user_server_info = connect_str.split("://")
         user_info, server_info = user_server_info.split("@")
         client_id, password = user_info.split(":")
         server, port = server_info.split(":")
@@ -43,8 +44,8 @@ class MessageBus(AbstractBus):
     def _queue_recv(self):
         while True:
             text = self._connector.recv()
-            if "MSGSVC" in text:
-                encrypted_str = text.split("MSGSVC")[1]
+            if self._message_tag in text:
+                encrypted_str = text.split(self._message_tag)[1]
                 message = Message.from_encrypted_str(self._password, encrypted_str)
 
                 if message.get_id() in self._received_msg_ids:
@@ -60,7 +61,7 @@ class MessageBus(AbstractBus):
         print("READY")
 
         while True:
-            self._connector.send("MSGSVC" + self._send_queue.get().to_encrypted_str(self._password))
+            self._connector.send(self._message_tag + self._send_queue.get().to_encrypted_str(self._password))
 
     def send_data(self, data):
         self.send(Message(self._client_id, data))
