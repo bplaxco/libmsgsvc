@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import ClientConnector
+from libmsgsvc import ClientConnector
 
 import imp
 import os
