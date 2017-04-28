@@ -9,9 +9,8 @@ def receive(bus, msg):
 def main(bus):
     data=raw_input(">").strip()
     try:
-        data=json.loads(data)
+        bus.send_data(json.loads(data))
     except:
-        pass
-    bus.send_data(data)
+        bus.send_data(data)
 
 bus = ClientConnector.connect("dbc-clnt", "password").listen(receive).publish(main, foreground=True)
