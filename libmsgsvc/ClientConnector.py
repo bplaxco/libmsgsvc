@@ -13,6 +13,10 @@ class ClientConnector(object):
 
     _listener_queues = None
 
+    @classmethod
+    def irc_connect(cls, client_id, channel, debug=False):
+        return cls("irc://%s:%s@irc.freenode.net:6667" % (client_id, channel), debug)
+
     def __init__(self, connection_str, debug=False):
         self._bus = MessageBus(connection_str, debug=debug)
         self._wait_for_bus()
@@ -56,5 +60,3 @@ class ClientConnector(object):
         signal.pause()
 
 
-def connect(client_id, channel, debug=False):
-    return ClientConnector("irc://%s:%s@irc.freenode.net:6667" % (client_id, channel), debug)

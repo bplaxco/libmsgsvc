@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from libmsgsvc import ClientConnector
+from libmsgsvc.ClientConnector import ClientConnector
 import json
 
 
@@ -17,5 +17,5 @@ def main(bus):
         bus.send_data(data)
 
 
-connector = ClientConnector.connect("dbc-clnt", "password")
+connector = ClientConnector.irc_connect("dbc-clnt", "password")
 connector.listen(receive).publish(main, foreground=True)

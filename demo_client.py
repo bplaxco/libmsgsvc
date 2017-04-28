@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import ClientConnector
+from libmsgsvc.ClientConnector import ClientConnector
 from time import sleep
 
 count = 0
@@ -26,7 +26,7 @@ def tick(bus):
     bus.send_data(str(count) + " seconds have passed.")
 
 
-connector = ClientConnector.login("client", "password")
+connector = ClientConnector.irc_connect("client", "password")
 connector.listen(receive)
 connector.listen(receive_caps)
 connector.publish(tick)
