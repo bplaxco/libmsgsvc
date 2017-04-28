@@ -41,7 +41,10 @@ class AbstractClient(object):
         return self._bus
 
     def get_client_id(self):
-        return self._bus.get_client_id()
+        return self.get_bus().get_client_id()
+
+    def pause(self):
+        signal.pause()
 
     def listen(self, message):
         raise NotImplementedError
@@ -49,5 +52,3 @@ class AbstractClient(object):
     def publish(self):
         raise NotImplementedError
 
-    def pause(self):
-        signal.pause()
