@@ -2,13 +2,10 @@
 
 from AbstractClient import AbstractClient
 
-
 def receive(bus, msg):
-    print(msg.get_data())
-
+    print("Got "+msg.get_data())
 
 def main(bus):
     bus.send_data(raw_input(">").strip())
 
-
-bus = AbstractClient("client", "password", receive, main, debug=False).listen().push()
+bus = AbstractClient("client", "password").listen(receive).publish(main, foreground=True)
