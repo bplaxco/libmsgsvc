@@ -9,13 +9,13 @@ from busses.MessageBus import MessageBus
 
 class AbstractClient(object):
 
-    listener_queues=None
+    listener_queues = None
 
     def __init__(self, client_id, password, server="irc.freenode.net:6667", debug=False):
         self.bus = MessageBus("irc://%s:%s@%s" % (client_id, password, server), debug=debug)
         self._wait_for_bus()
-        self.listener_queues=[]
-        thread.start_new_thread(self._start_proxy_listener,())
+        self.listener_queues = []
+        thread.start_new_thread(self._start_proxy_listener, ())
 
     def _start_proxy_listener(self):
         while True:
@@ -51,3 +51,49 @@ class AbstractClient(object):
 
     def hang(self):
         signal.pause()
+
+
+# import signal
+# import thread
+#
+# from libmsgsvc.busses.MessageBus import MessageBus
+#
+#
+# class SimpleClient(object):
+#     _is_listening = False
+#     _bus = None
+#
+#     def __init__(connect_str, debug=False):
+#         self._connect_str = connect_str
+#         self._debug = debug
+#         self._observers = []
+#
+#     def _notify(self, message):
+#         for observer in self._observers:
+#             thread.start_new_thread(observer, (self, message))
+#
+#     def _get_bus(self):
+#         if not self._bus:
+#             self._bus = MessageBus(self._connect_str, debug=self._debug)
+#
+#         return self._bus
+#
+#     def _listen(self):
+#         while True:
+#             self._notify(self._get_bus().recv())
+#
+#     def subscribe(self, observer):
+#         self._observers.append(observer)
+#         return self
+#
+#     def send(self, message):
+#         self._notify(message)
+#         self._get_bus().send(message)
+#
+#     def listen(self, blocking=False):
+#         if not self._is_listening:
+#             thread.start_new_thread(self._listen, tuple())
+#             self._is_listening = True
+#
+#         if blocking:
+#             signal.pause()
