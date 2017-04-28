@@ -10,6 +10,7 @@ class MessageBus(AbstractBus):
     _connector_by_proto = {"irc": IRCConnector}
     _password = "public"
     _connector = None
+    _message_tag = "MSGSVC-%s-" % Message.version
 
     def __init__(self, connect_str, debug=False):
         """
@@ -43,8 +44,8 @@ class MessageBus(AbstractBus):
     def _queue_recv(self):
         while True:
             text = self._connector.recv()
-            if "MSGSVC" in text:
-                encrypted_str = text.split("MSGSVC")[1]
+            if self._message_tag in text:
+                encrypted_str = text.split(self._message_tag)[1]
                 message = Message.from_encrypted_str(self._password, encrypted_str)
 
                 if message.get_id() in self._received_msg_ids:
@@ -60,7 +61,7 @@ class MessageBus(AbstractBus):
         print("READY")
 
         while True:
-            self._connector.send("MSGSVC" + self._send_queue.get().to_encrypted_str(self._password))
+            self._connector.send(self._message_tag + self._send_queue.get().to_encrypted_str(self._password))
 
     def send_data(self, data):
         self.send(Message(self._client_id, data))

@@ -5,6 +5,7 @@ import time
 
 from busses.MessageBus import MessageBus
 
+
 class SimpleClient(object):
     def __init__(self, connect_str, debug=False):
         self.bus = MessageBus(connect_str, debug=debug)

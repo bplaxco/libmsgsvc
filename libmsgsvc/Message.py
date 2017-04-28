@@ -6,6 +6,8 @@ from ciphers.AESCipher import AESCipher
 
 
 class Message(object):
+    version = "0.0.1"  # Change if the message format changes
+
     def __init__(self, client_id, data, message_id=None, created_at=None):
         self._client_id = client_id
         self._data = data
