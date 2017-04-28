@@ -63,6 +63,9 @@ class MessageBus(AbstractBus):
         while True:
             self._connector.send(self._message_tag + self._send_queue.get().to_encrypted_str(self._password))
 
+    def get_client_id(self):
+        return self._client_id
+
     def send_data(self, data):
         self.send(Message(self._client_id, data))
 

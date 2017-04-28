@@ -1,21 +1,29 @@
 #!/usr/bin/env python
 
-from libmsgsvc.ClientConnector import ClientConnector
+from libmsgsvc.AbstractClient import AbstractClient
 import json
 
 
-def receive(bus, msg):
-    print(msg.get_data())
+class Client(AbstractClient):
+    def listen(self, msg):
+        print(msg.get_data())
+
+    def publish(self):
+        data = raw_input("> ").strip()
+
+        try:
+            self.get_bus().send_data(json.loads(data))
+        except:
+            self.get_bus().send_data(data)
+
+        # Example using create_message
+        # try:
+        #     message = self.create_message(json.loads(data))
+        # except:
+        #     message = self.create_message(data)
+        #
+        # self.get_bus().send(message)
 
 
-def main(bus):
-    data = raw_input("> ").strip()
-
-    try:
-        bus.send_data(json.loads(data))
-    except:
-        bus.send_data(data)
-
-
-connector = ClientConnector.irc_connect("dbc-clnt", "password")
-connector.listen(receive).publish(main, foreground=True)
+client = Client.freenode_connect("libsvcmsg", "password")
+client.pause()
