@@ -37,5 +37,7 @@ for filename in file_list:
                 print "Attaching publisher " + filename + ":" + methodname
                 connector.publish(getattr(pyfile, methodname))
                 services_count += 1
+
 print "Attached " + str(services_count) + " service(s)."
+
 connector.hang()
