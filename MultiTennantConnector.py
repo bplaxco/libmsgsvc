@@ -3,7 +3,9 @@
 from libmsgsvc.AbstractClient import AbstractClient
 from Queue import Queue
 
-import thread, threading
+import thread
+import threading
+
 
 class MultiTennantConnector(AbstractClient):
     _listener_queues = None
@@ -14,13 +16,14 @@ class MultiTennantConnector(AbstractClient):
         self._queue_list_lock = threading.Lock()
         super(MultiTennantConnector, self).__init__(connection_str, debug)
 
-    #This is our proxy listener, which will delegate to the queues of each listener tennant
+    # This is our proxy listener, which will delegate to the queues of each
+    # listener tennant
     def listen(self, msg):
         with self._queue_list_lock:
             for q in self._listener_queues:
                 q.put(msg)
 
-    #We want to attach new publishers, not use a unique existing one
+    # We want to attach new publishers, not use a unique existing one
     def publish(self):
         thread.exit()
 
@@ -28,24 +31,30 @@ class MultiTennantConnector(AbstractClient):
         if not foreground:
             thread.start_new_thread(self.attach_listener, (method, loop, True))
         else:
-            print "Attaching listener "+method.__name__
+            print "Attaching listener " + method.__name__
             q = Queue()
+
             with self._queue_list_lock:
                 self._listener_queues.append(q)
+
             method(self.get_bus(), q.get())
+
             while loop:
                 method(self.get_bus(), q.get())
+
         return self
 
     def attach_publisher(self, method, loop=True, foreground=False):
         if not foreground:
-            thread.start_new_thread(self.attach_publisher, (method, loop, True))
+            thread.start_new_thread(
+                self.attach_publisher,
+                (method, loop, True),
+            )
         else:
-            print "Attaching publisher "+method.__name__
+            print "Attaching publisher " + method.__name__
             method(self.get_bus())
+
             while loop:
                 method(self.get_bus())
-        return self
 
-def connect(client_id, channel, debug=False):
-    return MultiTennantConnector("irc://%s:%s@irc.freenode.net:6667" % (client_id, channel), debug)
+        return self
