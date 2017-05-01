@@ -6,18 +6,13 @@ import time
 
 from busses.MessageBus import MessageBus
 from Message import Message
+from ConnectionInfo import ConnectionInfo
 
 
 class AbstractClient(object):
-    @classmethod
-    def freenode_connect(cls, client_id, channel, debug=False):
-        return cls(
-            "irc://%s:%s@irc.freenode.net:6667" % (client_id, channel),
-             debug=debug,
-        )
-
-    def __init__(self, connection_str, debug=False):
-        self._bus = MessageBus(connection_str, debug=debug)
+    def __init__(self, secret_key, tracker="tracker.lupnix.org:5556", debug=False):
+        self._connection_info = ConnectionInfo(secret_key, tracker)
+        self._bus = MessageBus(self._connection_info, debug=debug)
 
         while not self._bus.is_ready():
             time.sleep(1)
@@ -41,7 +36,10 @@ class AbstractClient(object):
         return self._bus
 
     def get_client_id(self):
-        return self.get_bus().get_client_id()
+        return self._connection_info.get_client_id()
+
+    def get_channel(self):
+        return self._connection_info.get_channel()
 
     def pause(self):
         signal.pause()

@@ -2,20 +2,17 @@ import re
 import socket
 import time
 
-from AbstractConnector import AbstractConnector
+from AbstractBus import AbstractBus
 
 
-class IRCConnector(AbstractConnector):
+class IRCConnector(AbstractBus):
     _privmsg_re = re.compile(".*PRIVMSG.*?:")
     _is_ready = False
     _conn = None
 
-    def __init__(self, client_id, channel, server, port, debug=False):
-        super(IRCConnector, self).__init__(client_id, channel, server, port, debug)
-        self._client_id = client_id
-        self._channel = channel
-        self._server = server
-        self._port = port
+    def __init__(self, connection_info, debug=False):
+        super(IRCConnector, self).__init__()
+        self._connection_info = connection_info
         self._debug = debug
         self._connect()
         self._start_queue_threads()
@@ -27,7 +24,7 @@ class IRCConnector(AbstractConnector):
         finally:
             self._conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        self._conn.connect((self._server, self._port))
+        self._conn.connect(self._connection_info.get_server_and_port())
         self._is_ready = False
         time.sleep(2)
         self._join()
@@ -44,9 +41,12 @@ class IRCConnector(AbstractConnector):
         return text
 
     def _join(self):
-        self._raw_send("USER %s %s %s : " % (self._client_id, self._client_id, self._client_id))
-        self._raw_send("NICK %s" % self._client_id)
-        self._raw_send("JOIN %s" % self._channel)
+        client_id = self._connection_info.get_client_id()
+        channel = self._connection_info.get_channel()
+
+        self._raw_send("USER %s %s %s : " % (client_id, client_id, client_id))
+        self._raw_send("NICK %s" % client_id)
+        self._raw_send("JOIN %s" % channel)
 
     def _queue_recv(self):
         while True:
@@ -62,7 +62,7 @@ class IRCConnector(AbstractConnector):
                     elif "PRIVMSG" in text:
                         self._recv_queue.put(self._privmsg_re.sub("", text))
                     elif not self._is_ready:
-                        self._is_ready = self._client_id in text and "JOIN" in text and self._channel in text
+                        self._is_ready = self._connection_info.get_client_id() in text and "JOIN" in text and self._connection_info.get_channel() in text
             except Exception as e:
                 print(e)
                 time.sleep(1)
@@ -81,7 +81,7 @@ class IRCConnector(AbstractConnector):
             text = self._send_queue.get()
 
             try:
-                self._raw_send("PRIVMSG %s %s" % (self._channel, text))
+                self._raw_send("PRIVMSG %s %s" % (self._connection_info.get_channel(), text))
             except Exception as e:
                 print(e)
                 time.sleep(1)
