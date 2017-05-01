@@ -6,9 +6,9 @@ from Crypto.Cipher import AES
 
 class AESCipher(object):
 
-    def __init__(self, key):
+    def __init__(self, secret_key):
         self.bs = 32
-        self.key = hashlib.sha256(key.encode()).digest()
+        self.secret_key = hashlib.sha256(secret_key.encode()).digest()
 
     def _pad(self, s):
         return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
@@ -19,11 +19,11 @@ class AESCipher(object):
     def encrypt(self, raw):
         raw = self._pad(raw)
         iv = Random.new().read(AES.block_size)
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        cipher = AES.new(self.secret_key, AES.MODE_CBC, iv)
         return base64.b64encode(iv + cipher.encrypt(raw))
 
     def decrypt(self, enc):
         enc = base64.b64decode(enc)
         iv = enc[:AES.block_size]
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        cipher = AES.new(self.secret_key, AES.MODE_CBC, iv)
         return self._unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')

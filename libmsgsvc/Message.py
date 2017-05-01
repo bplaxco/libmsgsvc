@@ -26,12 +26,12 @@ class Message(object):
     def from_dict(cls, msg_dict):
         return cls(**msg_dict)
 
-    def to_encrypted_str(self, password):
-        return AESCipher(password).encrypt(json.dumps(self.to_dict()))
+    def to_encrypted_str(self, secret_key):
+        return AESCipher(secret_key).encrypt(json.dumps(self.to_dict()))
 
     @classmethod
-    def from_encrypted_str(cls, password, encrypted_str):
-        return cls.from_dict(json.loads(AESCipher(password).decrypt(encrypted_str)))
+    def from_encrypted_str(cls, secret_key, encrypted_str):
+        return cls.from_dict(json.loads(AESCipher(secret_key).decrypt(encrypted_str)))
 
     def get_data(self):
         return self._data
