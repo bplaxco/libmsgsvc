@@ -25,7 +25,7 @@ def tick(bus):
     bus.send_data(str(count) + " seconds have passed.")
 
 
-con = mtc.freenode_connect("mtdc", "channel")
+con = mtc("mtc-channel")
 con.attach_listener(receive)
 con.attach_listener(receive_caps)
 con.attach_publisher(tick)

@@ -25,5 +25,5 @@ class Client(AbstractClient):
         # self.get_bus().send(message)
 
 
-client = Client("password", tracker="localhost:5556", debug=True)
+client = Client("secret_key", tracker="localhost:5556")
 client.pause()
