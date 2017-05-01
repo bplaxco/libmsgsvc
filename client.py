@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+
+import json
+import sys
 
 from libmsgsvc.AbstractClient import AbstractClient
-import json
 
 
 class Client(AbstractClient):
@@ -25,5 +27,11 @@ class Client(AbstractClient):
         # self.get_bus().send(message)
 
 
-client = Client("secret_key", tracker="localhost:5556")
+if len(sys.argv) == 1:
+    client = Client("public", tracker="localhost:5556")
+elif len(sys.argv) == 2:
+    client = Client(sys.argv[1], tracker="localhost:5556")
+elif len(sys.argv) > 2:
+    client = Client(sys.argv[1], tracker=sys.argv[2])
+
 client.pause()
