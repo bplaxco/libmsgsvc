@@ -1,5 +1,7 @@
-import socket
 import hashlib
+import random
+import socket
+import string
 import uuid
 
 
@@ -8,7 +10,10 @@ class ConnectionInfo(object):
         self._secret_key = secret_key
         self._tracker = tracker
         self._channel = '#' + hashlib.sha256(secret_key).hexdigest()[:25]
-        self._client_id = hashlib.sha256(str(uuid.uuid4())).hexdigest()[:9]
+
+        # Some servers don't like it if you start with a number
+        self._client_id = random.choice(string.letters)
+        self._client_id += hashlib.sha256(str(uuid.uuid4())).hexdigest()[:8]
 
     def get_channel(self):
         return self._channel

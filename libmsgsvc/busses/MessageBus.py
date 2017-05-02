@@ -25,7 +25,7 @@ class MessageBus(AbstractBus):
                 encrypted_str = text.split(self._message_tag)[1]
                 message = Message.from_encrypted_str(self._connection_info.get_secret_key(), encrypted_str)
 
-                if message.get_id() in self._received_msg_ids:
+                if not message or message.get_id() in self._received_msg_ids:
                     continue
 
                 self._received_msg_ids.append(message.get_id())
