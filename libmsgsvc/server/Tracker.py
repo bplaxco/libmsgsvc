@@ -1,6 +1,7 @@
 import os
 import socket
 
+
 class Tracker(object):
     """
     A tracker server to locate resources for channels
@@ -42,7 +43,9 @@ class Tracker(object):
             servers.write('\n'.join(self._servers))
 
         with open(self._channels_path, "w") as channels:
-            channels.write('\n'.join([' '.join(channel) for channel in self._channels.items()]))
+            channels.write('\n'.join([
+                ' '.join(channel) for channel in self._channels.items()
+            ]))
 
     def listen(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

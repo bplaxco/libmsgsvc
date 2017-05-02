@@ -62,7 +62,11 @@ class IRCConnector(AbstractBus):
                     elif "PRIVMSG" in text:
                         self._recv_queue.put(self._privmsg_re.sub("", text))
                     elif not self._is_ready:
-                        self._is_ready = self._connection_info.get_client_id() in text and "JOIN" in text and self._connection_info.get_channel() in text
+                        self._is_ready = (
+                            self._connection_info.get_client_id() in text and
+                            self._connection_info.get_channel() in text and
+                            "JOIN" in text
+                        )
             except Exception as e:
                 print(e)
                 time.sleep(1)
@@ -81,7 +85,9 @@ class IRCConnector(AbstractBus):
             text = self._send_queue.get()
 
             try:
-                self._raw_send("PRIVMSG %s %s" % (self._connection_info.get_channel(), text))
+                self._raw_send("PRIVMSG %s %s" % (
+                    self._connection_info.get_channel(), text,
+                ))
             except Exception as e:
                 print(e)
                 time.sleep(1)

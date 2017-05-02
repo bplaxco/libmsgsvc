@@ -15,7 +15,9 @@ class Message(object):
     @classmethod
     def from_encrypted_str(cls, secret_key, encrypted_str):
         try:
-            return cls.from_dict(json.loads(AESCipher(secret_key).decrypt(encrypted_str)))
+            return cls.from_dict(json.loads(
+                AESCipher(secret_key).decrypt(encrypted_str)
+            ))
         except:
             pass
 

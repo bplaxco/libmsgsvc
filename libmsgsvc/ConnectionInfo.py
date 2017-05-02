@@ -33,9 +33,11 @@ class ConnectionInfo(object):
             server, port = conn.recv(1024).split(":")
             return (server, int(port))
         except:
-            print("Tracker Error: using default server and port... (irc.freenode.net:6667)")
+            print("Tracker Error: Defaulting to irc.freenode.net:6667...")
             return ("irc.freenode.net", 6667)
 
     def __str__(self):
         server, port = self.get_server_and_port()
-        return "Connecting to %s:%d on %s as %s" % (server, port, self.get_channel(), self._client_id)
+        return "Connecting to %s:%d on %s as %s" % (
+            server, port, self.get_channel(), self._client_id,
+        )

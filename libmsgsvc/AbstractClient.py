@@ -10,8 +10,11 @@ from ConnectionInfo import ConnectionInfo
 
 
 class AbstractClient(object):
-    def __init__(self, secret_key, tracker="tracker.lupnix.org:5556", debug=False):
-        self._connection_info = ConnectionInfo(secret_key, tracker)
+    def __init__(self, secret_key, tracker=None, debug=False):
+        self._connection_info = ConnectionInfo(
+            secret_key,
+            tracker or "tracker.lupnix.org:5556",
+        )
         self._bus = MessageBus(self._connection_info, debug=debug)
 
         while not self._bus.is_ready():
@@ -49,4 +52,3 @@ class AbstractClient(object):
 
     def publish(self):
         raise NotImplementedError
-

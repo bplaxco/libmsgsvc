@@ -23,7 +23,8 @@ class MessageBus(AbstractBus):
             text = self._connector.recv()
             if self._message_tag in text:
                 encrypted_str = text.split(self._message_tag)[1]
-                message = Message.from_encrypted_str(self._connection_info.get_secret_key(), encrypted_str)
+                secret_key = self._connection_info.get_secret_key()
+                message = Message.from_encrypted_str(secret_key, encrypted_str)
 
                 if not message or message.get_id() in self._received_msg_ids:
                     continue
@@ -38,7 +39,10 @@ class MessageBus(AbstractBus):
         print("READY")
 
         while True:
-            self._connector.send(self._message_tag + self._send_queue.get().to_encrypted_str(self._connection_info.get_secret_key()))
+            secret_key = self._connection_info.get_secret_key()
+            message = self._send_queue.get()
+            encrypted_str = message.to_encrypted_str(secret_key)
+            self._connector.send(self._message_tag + encrypted_str)
 
     def get_client_id(self):
         return self._connection_info.get_client_id()
