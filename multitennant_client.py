@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from MultiTennantConnector import MultiTennantConnector as mtc
+from MultiTennantConnector import MultiTennantConnector
 from time import sleep
 
 count = 0
@@ -25,7 +25,7 @@ def tick(bus):
     bus.send_data(str(count) + " seconds have passed.")
 
 
-con = mtc("mtc-channel")
+con = MultiTennantConnector("mtc-channel", server="irc.freenode.net:6667")
 con.attach_listener(receive)
 con.attach_listener(receive_caps)
 con.attach_publisher(tick)

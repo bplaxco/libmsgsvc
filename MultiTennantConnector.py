@@ -11,10 +11,10 @@ class MultiTennantConnector(AbstractClient):
     _listener_queues = None
     _queue_list_lock = None
 
-    def __init__(self, connection_str, debug=False):
+    def __init__(self, secret_key, server=None, debug=False):
         self._listener_queues = []
         self._queue_list_lock = threading.Lock()
-        super(MultiTennantConnector, self).__init__(connection_str, debug)
+        super(MultiTennantConnector, self).__init__(secret_key, server=server, debug=debug)
 
     # This is our proxy listener, which will delegate to the queues of each
     # listener tennant

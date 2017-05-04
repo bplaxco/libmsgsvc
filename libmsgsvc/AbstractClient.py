@@ -10,10 +10,9 @@ from ConnectionInfo import ConnectionInfo
 
 
 class AbstractClient(object):
-    def __init__(self, secret_key, tracker=None, debug=False):
+    def __init__(self, secret_key, server=None, debug=False):
         self._connection_info = ConnectionInfo(
-            secret_key,
-            tracker or "tracker.lupnix.org:5556",
+            secret_key, server=server or "localhost:6667",
         )
         self._bus = MessageBus(self._connection_info, debug=debug)
 
