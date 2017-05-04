@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
+
+import json
+import sys
 
 from libmsgsvc.AbstractClient import AbstractClient
-import json
 
 
 class Client(AbstractClient):
@@ -24,6 +26,15 @@ class Client(AbstractClient):
         #
         # self.get_bus().send(message)
 
+if __name__ == "__main__":
+    debug = False
+    tracker = "localhost:5556"
 
-client = Client.freenode_connect("libsvcmsg", "password")
-client.pause()
+    if len(sys.argv) == 1:
+        client = Client("public", tracker=tracker, debug=debug)
+    elif len(sys.argv) == 2:
+        client = Client(sys.argv[1], tracker=tracker, debug=debug)
+    elif len(sys.argv) > 2:
+        client = Client(sys.argv[1], tracker=sys.argv[2], debug=debug)
+
+    client.pause()

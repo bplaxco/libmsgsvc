@@ -8,6 +8,19 @@ from ciphers.AESCipher import AESCipher
 class Message(object):
     version = "0.0.1"  # Change if the message format changes
 
+    @classmethod
+    def from_dict(cls, msg_dict):
+        return cls(**msg_dict)
+
+    @classmethod
+    def from_encrypted_str(cls, secret_key, encrypted_str):
+        try:
+            return cls.from_dict(json.loads(
+                AESCipher(secret_key).decrypt(encrypted_str)
+            ))
+        except:
+            pass
+
     def __init__(self, client_id, data, message_id=None, created_at=None):
         self._client_id = client_id
         self._data = data
@@ -22,16 +35,8 @@ class Message(object):
             "created_at": self._created_at,
         }
 
-    @classmethod
-    def from_dict(cls, msg_dict):
-        return cls(**msg_dict)
-
-    def to_encrypted_str(self, password):
-        return AESCipher(password).encrypt(json.dumps(self.to_dict()))
-
-    @classmethod
-    def from_encrypted_str(cls, password, encrypted_str):
-        return cls.from_dict(json.loads(AESCipher(password).decrypt(encrypted_str)))
+    def to_encrypted_str(self, secret_key):
+        return AESCipher(secret_key).encrypt(json.dumps(self.to_dict()))
 
     def get_data(self):
         return self._data
@@ -44,4 +49,3 @@ class Message(object):
 
     def get_created_at(self):
         return self._created_at
-
