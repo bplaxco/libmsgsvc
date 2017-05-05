@@ -28,13 +28,13 @@ class Client(AbstractClient):
 
 if __name__ == "__main__":
     debug = False
-    tracker = "localhost:5556"
+    server = "irc.freenode.net:6667"
 
     if len(sys.argv) == 1:
-        client = Client("public", tracker=tracker, debug=debug)
+        client = Client("public", server=server, debug=debug)
     elif len(sys.argv) == 2:
-        client = Client(sys.argv[1], tracker=tracker, debug=debug)
+        client = Client(sys.argv[1], server=server, debug=debug)
     elif len(sys.argv) > 2:
-        client = Client(sys.argv[1], tracker=sys.argv[2], debug=debug)
+        client = Client(sys.argv[1], server=sys.argv[2], debug=debug)
 
     client.pause()
