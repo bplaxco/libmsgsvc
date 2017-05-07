@@ -19,7 +19,7 @@ class MessageBus(AbstractBus):
         print(str(connection_info))
 
     def _queue_recv(self):
-        while True:
+        while not self._connector.is_closed():
             text = self._connector.recv()
             if self._message_tag in text:
                 encrypted_str = text.split(self._message_tag)[1]
@@ -38,7 +38,7 @@ class MessageBus(AbstractBus):
 
         print("READY")
 
-        while True:
+        while not self._connector.is_closed():
             secret_key = self._connection_info.get_secret_key()
             message = self._send_queue.get()
             encrypted_str = message.to_encrypted_str(secret_key)
@@ -58,6 +58,9 @@ class MessageBus(AbstractBus):
 
     def is_ready(self):
         return self._connector.is_ready()
+
+    def is_closed(self):
+        return self._connector.is_closed()
 
     def close(self):
         self._connector.close()

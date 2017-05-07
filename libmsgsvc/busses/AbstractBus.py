@@ -29,5 +29,8 @@ class AbstractBus(object):
     def is_ready(self):
         raise NotImplementedError
 
+    def is_closed(self):
+        raise NotImplementedError
+
     def close(self):
         raise NotImplementedError

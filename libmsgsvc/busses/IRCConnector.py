@@ -10,6 +10,7 @@ class IRCConnector(AbstractBus):
     _is_ready = False
     _conn = None
     _subscriber_count = 0
+    _do_reconnect = True
 
     def __init__(self, connection_info, debug=False):
         super(IRCConnector, self).__init__()
@@ -19,6 +20,9 @@ class IRCConnector(AbstractBus):
         self._start_queue_threads()
 
     def _connect(self):
+        if self.is_closed():
+            return
+
         try:
             if self._conn:
                 self._conn.close()
@@ -31,11 +35,17 @@ class IRCConnector(AbstractBus):
         self._join()
 
     def _raw_send(self, text):
+        if self.is_closed():
+            return
+
         if self._debug:
             print("<- " + text)
         self._conn.send(text + "\r\n")
 
     def _raw_recv(self):
+        if self.is_closed():
+            return ""
+
         text = self._conn.recv(2 ** 14)
         if self._debug:
             print("-> " + text)
@@ -50,7 +60,7 @@ class IRCConnector(AbstractBus):
         self._raw_send("JOIN %s" % channel)
 
     def _queue_recv(self):
-        while True:
+        while self._do_reconnect:
             client_id = self._connection_info.get_client_id()
             channel = self._connection_info.get_channel()
 
@@ -85,6 +95,9 @@ class IRCConnector(AbstractBus):
                         self._raw_send("NAMES " + channel)
 
             except Exception as e:
+                if self.is_closed():
+                    return
+
                 print(e)
                 time.sleep(1)
                 print("Reconnecting")
@@ -98,7 +111,7 @@ class IRCConnector(AbstractBus):
         while not self._is_ready:
             time.sleep(1)
 
-        while True:
+        while self._do_reconnect:
             text = self._send_queue.get()
 
             try:
@@ -106,6 +119,9 @@ class IRCConnector(AbstractBus):
                     self._connection_info.get_channel(), text,
                 ))
             except Exception as e:
+                if self.is_closed():
+                    return
+
                 print(e)
                 time.sleep(1)
 
@@ -123,5 +139,9 @@ class IRCConnector(AbstractBus):
     def is_ready(self):
         return self._is_ready
 
+    def is_closed(self):
+        return not self._do_reconnect
+
     def close(self):
-        pass  # TODO
+        self._do_reconnect = False
+        self._raw_send("QUIT")
