@@ -23,6 +23,9 @@ class AbstractBus(object):
     def _dequeue_send(self):
         raise NotImplementedError
 
+    def get_subscriber_count(self):
+        raise NotImplementedError
+
     def is_ready(self):
         raise NotImplementedError
 

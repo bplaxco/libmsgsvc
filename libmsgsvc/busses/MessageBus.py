@@ -53,6 +53,9 @@ class MessageBus(AbstractBus):
     def recv_data(self):
         return self.recv().get_data()
 
+    def get_subscriber_count(self):
+        return self._connector.get_subscriber_count()
+
     def is_ready(self):
         return self._connector.is_ready()
 

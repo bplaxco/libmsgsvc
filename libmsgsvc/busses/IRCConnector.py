@@ -9,6 +9,7 @@ class IRCConnector(AbstractBus):
     _privmsg_re = re.compile(".*PRIVMSG.*?:")
     _is_ready = False
     _conn = None
+    _subscriber_count = 0
 
     def __init__(self, connection_info, debug=False):
         super(IRCConnector, self).__init__()
@@ -50,6 +51,9 @@ class IRCConnector(AbstractBus):
 
     def _queue_recv(self):
         while True:
+            client_id = self._connection_info.get_client_id()
+            channel = self._connection_info.get_channel()
+
             try:
                 lines = self._raw_recv()
 
@@ -57,16 +61,29 @@ class IRCConnector(AbstractBus):
                     raise Exception("Connection terminated")
 
                 for text in lines.splitlines():
-                    if text.find('PING') != -1:
-                        self._raw_send('PONG ' + text.split()[1])
-                    elif "PRIVMSG" in text:
+                    if "PRIVMSG" in text:
                         self._recv_queue.put(self._privmsg_re.sub("", text))
+
+                    # Handle server ping
+                    elif text.find('PING') != -1:
+                        self._raw_send('PONG ' + text.split()[1])
+
+                    # Set ready status on JOIN
                     elif not self._is_ready:
                         self._is_ready = (
-                            self._connection_info.get_client_id() in text and
-                            self._connection_info.get_channel() in text and
+                            client_id in text and
+                            channel in text and
                             "JOIN" in text
                         )
+
+                    # Update subscriber count
+                    elif "353 " + client_id in text and channel in text:
+                        self._subscriber_count = len(text.split(":")[2].split()) - 1
+
+                    # Send NAMES query on join and quit
+                    elif "JOIN " + channel in text or "QUIT" in text:
+                        self._raw_send("NAMES " + channel)
+
             except Exception as e:
                 print(e)
                 time.sleep(1)
@@ -99,6 +116,9 @@ class IRCConnector(AbstractBus):
                     self._connect()
                 except:
                     print("Could not reconnect, will try again.")
+
+    def get_subscriber_count(self):
+        return self._subscriber_count
 
     def is_ready(self):
         return self._is_ready
