@@ -7,7 +7,7 @@ from Crypto.Cipher import AES
 class AESCipher(object):
 
     def __init__(self, secret_key):
-        self.bs = 32
+        self.bs = 128
         self.secret_key = hashlib.sha256(secret_key.encode()).digest()
 
     def _pad(self, s):
