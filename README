@@ -6,18 +6,11 @@ this only supports IRC.
 
 CLIENT
 
-The client is like a "netcat" connection. It just sends what ever you
-type across the wire and prints out what it sees. The client is mainly an
-example and for debugging though.
+client.py just sends what ever you type across the wire and prints out what it
+receieves. The client is mainly an example and for debugging.
 
 
 TODO
 
 * Packaging
 * Misc helpers and refactoring
-
-
-AUTHORS
-
-* Braxton Plaxco
-* Jonathan Pittard
