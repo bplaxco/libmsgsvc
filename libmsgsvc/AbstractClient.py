@@ -84,8 +84,8 @@ def data_to_message_str(client, data):
     )
 
 
-def fmt_id(first, body, length):
-    return "".join([first, sha256(str(body), "hexdigest")[:length]])
+def fmt_id(first, body, length=8):
+    return first + sha256(str(body), "hexdigest")[:length]
 
 
 class AbstractClient(object):
@@ -94,7 +94,7 @@ class AbstractClient(object):
         self._secret_key = secret_key
         self._server = server or "localhost:6667"
         self._channel = '#' + sha256(secret_key, "hexdigest")[:25]
-        self._id = fmt_id(random.choice(string.letters), uuid.uuid4(), 8)
+        self._id = fmt_id(random.choice(string.letters), uuid.uuid4())
         self._bus = IRCConnector(self, debug=debug)
         print("Ready")
 
@@ -122,3 +122,5 @@ class AbstractClient(object):
     def get_server_and_port(self):
         return tuple(map(cast, self._server.split(":")))
 
+    def get_subscriber_count(self):
+        return self._bus.get_subscriber_count()

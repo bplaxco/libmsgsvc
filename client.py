@@ -24,4 +24,4 @@ if __name__ == "__main__":
         client = Client(sys.argv[1], server=sys.argv[2], debug=debug)
 
     while True:
-        client.send(raw_input("> ").strip())
+        client.send(raw_input("(%s in room) > " % client.get_subscriber_count()).strip())
