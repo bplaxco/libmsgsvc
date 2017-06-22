@@ -14,7 +14,6 @@ class Client(AbstractClient):
 if __name__ == "__main__":
     debug = False
     server = "irc.freenode.net:6667"
-    server = "localhost:6667"
 
     if len(sys.argv) == 1:
         client = Client("public", server=server, debug=debug)
