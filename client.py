@@ -7,28 +7,14 @@ from libmsgsvc.AbstractClient import AbstractClient
 
 
 class Client(AbstractClient):
-    def listen(self, msg):
-        print(msg.get_data())
+    def on_recv(self, data):
+        print(data)
 
-    def publish(self):
-        data = raw_input("> ").strip()
-
-        try:
-            self.get_bus().send_data(json.loads(data))
-        except:
-            self.get_bus().send_data(data)
-
-        # Example using create_message
-        # try:
-        #     message = self.create_message(json.loads(data))
-        # except:
-        #     message = self.create_message(data)
-        #
-        # self.get_bus().send(message)
 
 if __name__ == "__main__":
     debug = False
     server = "irc.freenode.net:6667"
+    server = "localhost:6667"
 
     if len(sys.argv) == 1:
         client = Client("public", server=server, debug=debug)
@@ -37,4 +23,5 @@ if __name__ == "__main__":
     elif len(sys.argv) > 2:
         client = Client(sys.argv[1], server=sys.argv[2], debug=debug)
 
-    client.pause()
+    while True:
+        client.send(raw_input("> ").strip())
